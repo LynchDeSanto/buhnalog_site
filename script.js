@@ -6,6 +6,10 @@ const calculatorConfig = {
   consultingPrice: 4000,
 };
 
+const contactConfig = {
+  endpoint: '/.netlify/functions/contact',
+};
+
 const calculator = document.querySelector('#priceCalculator');
 const taxSystem = document.querySelector('#taxSystem');
 const operations = document.querySelector('#operations');
@@ -37,7 +41,14 @@ function updateCalculator() {
   totalPrice.textContent = `${currencyFormatter.format(total)}/мес.`;
 }
 
-function handleContactSubmit(event) {
+function setFormState(isLoading, message) {
+  const submitButton = contactForm.querySelector('button[type="submit"]');
+  submitButton.disabled = isLoading;
+  submitButton.textContent = isLoading ? 'Отправляем...' : 'Отправить заявку';
+  formStatus.textContent = message;
+}
+
+async function handleContactSubmit(event) {
   event.preventDefault();
 
   if (!contactForm.checkValidity()) {
@@ -46,13 +57,33 @@ function handleContactSubmit(event) {
   }
 
   const data = new FormData(contactForm);
-  const subject = encodeURIComponent('Заявка с сайта Баланс Профи');
-  const body = encodeURIComponent(
-    `Имя: ${data.get('name')}\nКонтакт: ${data.get('contact')}\nЗадача: ${data.get('message')}`,
-  );
+  const payload = {
+    name: data.get('name'),
+    contact: data.get('contact'),
+    message: data.get('message'),
+    privacy: data.get('privacy') === 'on',
+    source: window.location.href,
+  };
 
-  formStatus.textContent = 'Спасибо! Открываем почтовый клиент для отправки заявки.';
-  window.location.href = `mailto:hello@balance-profi.ru?subject=${subject}&body=${body}`;
+  setFormState(true, 'Отправляем заявку...');
+
+  try {
+    const response = await fetch(contactConfig.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(result.message || 'Не удалось отправить заявку');
+    }
+
+    contactForm.reset();
+    setFormState(false, result.message || 'Заявка отправлена. Мы скоро свяжемся с вами.');
+  } catch (error) {
+    setFormState(false, `${error.message}. Если ошибка повторится, напишите на hello@balance-profi.ru.`);
+  }
 }
 
 calculator.addEventListener('input', updateCalculator);

@@ -156,3 +156,7 @@ select { min-height: 48px; border: 1px solid var(--line); border-radius: 14px; p
   .contact-form { grid-template-columns: 1fr; padding: 18px; border-radius: 22px; }
   .calculator-result { align-items: flex-start; flex-direction: column; }
 }
+.contact-form .button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
