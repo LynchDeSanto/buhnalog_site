@@ -104,3 +104,55 @@ select { min-height: 48px; border: 1px solid var(--line); border-radius: 14px; p
   .footer-grid { align-items: flex-start; flex-direction: column; }
   .nav .button { display: none; }
 }
+
+.contact-form {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.08);
+}
+.contact-form label { display: grid; gap: 8px; font-weight: 700; color: rgba(255, 255, 255, 0.86); }
+.form-field-full, .form-consent, .contact-form .button, .form-note { grid-column: 1 / -1; }
+.contact-form input, .contact-form textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 16px;
+  padding: 14px 16px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  font: inherit;
+}
+.contact-form input::placeholder, .contact-form textarea::placeholder { color: rgba(255, 255, 255, 0.58); }
+.contact-form input:focus, .contact-form textarea:focus { outline: 3px solid rgba(216, 168, 78, 0.4); border-color: var(--gold); }
+.form-consent { grid-template-columns: auto 1fr !important; align-items: start; font-weight: 500 !important; }
+.form-consent a { text-decoration: underline; text-underline-offset: 3px; }
+.form-note { margin: -4px 0 0; font-size: .92rem; }
+
+@media (max-width: 900px) {
+  .site-header { position: sticky; }
+  .nav { min-height: 64px; flex-wrap: nowrap; padding: 8px 0; gap: 12px; }
+  .nav-links { order: initial; width: auto; justify-content: flex-end; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a { white-space: nowrap; padding: 8px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.55); font-size: .9rem; }
+  .button-small { min-height: 38px; padding: 0 12px; font-size: .9rem; }
+}
+
+@media (max-width: 560px) {
+  .nav { min-height: 58px; }
+  .logo { gap: 8px; font-size: .95rem; }
+  .logo-mark { width: 34px; height: 34px; border-radius: 11px; font-size: .85rem; }
+  .nav-links { display: none; }
+  .nav .button { display: inline-flex; min-height: 36px; padding: 0 12px; }
+  .hero { padding-top: 36px; }
+  h1 { font-size: clamp(2.25rem, 13vw, 3.35rem); }
+  h2 { font-size: clamp(1.8rem, 9vw, 2.5rem); }
+  .hero-actions .button { width: 100%; }
+  .hero-card { transform: none; padding: 24px; }
+  .contact-card { padding: 24px; border-radius: 28px; }
+  .contact-form { grid-template-columns: 1fr; padding: 18px; border-radius: 22px; }
+  .calculator-result { align-items: flex-start; flex-direction: column; }
+}
