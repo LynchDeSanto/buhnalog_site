@@ -7,7 +7,7 @@ const calculatorConfig = {
 };
 
 const contactConfig = {
-  endpoint: '/.netlify/functions/contact',
+  endpoint: '/api/send',
 };
 
 const calculator = document.querySelector('#priceCalculator');

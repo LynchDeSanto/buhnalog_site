@@ -1,15 +1,17 @@
 # Баланс Профи — лендинг бухгалтерских услуг
 
-Статический лендинг для бухгалтерской компании: блоки «О компании», «Услуги», «Калькулятор услуг», «Связаться с нами», форма обратной связи и отдельная страница политики конфиденциальности.
+Лендинг для бухгалтерской компании: блоки «О компании», «Услуги», «Калькулятор услуг», «Связаться с нами», форма обратной связи, отправка заявок в Telegram через Node.js backend и отдельная страница политики конфиденциальности.
 
-## Где править тексты
+## Структура проекта
 
 - `index.html` — основной контент лендинга: заголовки, описания, услуги, контакты, пункты преимуществ, шаги работы и поля формы.
 - `privacy.html` — текст политики конфиденциальности.
-- `script.js` — логика калькулятора и отправка формы в серверную функцию.
-- `netlify/functions/contact.js` — серверная функция, которая отправляет заявки в Telegram-бота.
-- `netlify.toml` — настройки Netlify: папка публикации, функции и базовые security headers.
 - `styles.css` — цвета, сетка, отступы, адаптивность, стили формы и мобильного хедера.
+- `script.js` — логика калькулятора и отправка формы через `fetch('/api/send')`.
+- `server.js` — минимальный Node.js backend без внешних зависимостей: принимает заявки, валидирует данные и отправляет их в Telegram.
+- `package.json` — зависимости и npm-скрипты.
+- `.env.example` — пример переменных окружения для Telegram и порта сервера.
+- `deploy/balance-profi.service` — пример systemd unit для автозапуска backend на Linux-сервере.
 
 ## Калькулятор услуг
 
@@ -72,108 +74,129 @@ const calculatorConfig = {
 <input id="employees" type="range" min="0" max="50" step="1" value="3" />
 ```
 
-- `min` — минимальное значение;
-- `max` — максимальное значение;
-- `step` — шаг изменения;
-- `value` — значение по умолчанию.
-
 ## Форма обратной связи и Telegram
 
-Форма находится в блоке `#contacts` в `index.html`. После нажатия «Отправить заявку» пользователь остаётся на сайте: `script.js` отправляет JSON-запрос на серверную функцию `/.netlify/functions/contact`, а функция `netlify/functions/contact.js` пересылает заявку в Telegram через Bot API.
+Форма находится в блоке `#contacts` в `index.html`. После нажатия «Отправить заявку» пользователь остаётся на сайте: `script.js` отправляет JSON-запрос на `/api/send`, а `server.js` пересылает заявку в Telegram через Bot API.
 
-### Как настроить Telegram-бота
+Frontend отправляет JSON такого вида:
 
-1. Создайте бота через `@BotFather` в Telegram и получите токен.
-2. Узнайте `chat_id`, куда должны приходить заявки: это может быть личный чат, группа или канал, где бот добавлен участником.
-3. В Netlify добавьте переменные окружения:
+```json
+{
+  "name": "Иван Иванов",
+  "contact": "+7 999 000-00-00",
+  "message": "Нужно вести ООО на УСН",
+  "privacy": true,
+  "source": "https://example.ru/"
+}
+```
+
+Backend:
+
+- принимает только `POST /api/send`;
+- хранит `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID` только на сервере в `.env`;
+- валидирует обязательные поля и согласие с политикой;
+- очищает управляющие символы, убирает `<`/`>`, ограничивает длину полей;
+- экранирует текст перед отправкой в Telegram HTML-сообщением;
+- возвращает JSON с кодом `200` при успехе и понятные ошибки при неудаче.
+
+## Локальный запуск
+
+Требования: Node.js 18+.
+
+1. Установите зависимости:
+
+```bash
+npm install
+```
+
+2. Создайте `.env` из примера:
+
+```bash
+cp .env.example .env
+```
+
+3. Заполните `.env`:
 
 ```text
 TELEGRAM_BOT_TOKEN=123456:telegram-bot-token
 TELEGRAM_CHAT_ID=123456789
+PORT=3000
 ```
 
-4. Задеплойте сайт. После этого форма начнёт отправлять заявки без открытия почтового клиента.
-
-### Как поменять endpoint формы
-
-Адрес обработчика задаётся в `script.js`:
-
-```js
-const contactConfig = {
-  endpoint: '/.netlify/functions/contact',
-};
-```
-
-Если будете использовать другой backend, замените `endpoint` на свой URL и сохраните формат JSON-полей: `name`, `contact`, `message`, `privacy`, `source`.
-
-### Что проверяет обработчик
-
-- принимает только `POST`;
-- требует `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID`;
-- парсит JSON и проверяет обязательные поля;
-- очищает управляющие символы и ограничивает длину полей;
-- экранирует текст перед отправкой в Telegram HTML-сообщением;
-- возвращает JSON-ответ, который показывается пользователю под формой.
-
-## Оптимизация, скорость и ИБ
-
-Что уже сделано:
-
-- сайт статический и не требует сборки, поэтому быстро отдаётся с CDN или любого веб-сервера;
-- внешний шрифт заменён на системный стек, чтобы убрать лишние сетевые запросы и передачу данных третьей стороне;
-- скрипт подключён с `defer`, не блокирует первичный рендеринг страницы;
-- добавлен базовый `Content-Security-Policy` в `index.html` и `privacy.html` без `upgrade-insecure-requests`, чтобы тестовый HTTP-стенд не ломался;
-- форма использует HTML5-валидацию, `maxlength` для текстовых полей, обязательное согласие с политикой и серверную проверку в функции;
-- нет сторонних JavaScript-библиотек, трекеров и небезопасных inline-скриптов.
-
-Рекомендации для продакшена:
-
-- включите HTTPS и редирект с HTTP на HTTPS;
-- настройте заголовки `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` на уровне веб-сервера;
-- включите gzip или brotli-сжатие для `html`, `css`, `js`;
-- задайте кеширование для статических файлов и аккуратно обновляйте имена файлов при релизах;
-- не храните заявки только в email без резервного процесса обработки;
-- для формы на продакшене добавьте rate limiting, CAPTCHA/Turnstile при спаме, журнал ошибок функции и мониторинг доставки в Telegram.
-
-## Локальный запуск
-
-Сайт не требует сборки. Достаточно открыть `index.html` в браузере или запустить простой статический сервер:
+4. Запустите сервер:
 
 ```bash
-python3 -m http.server 8080
+npm start
 ```
 
-После запуска откройте в браузере:
+5. Откройте сайт:
 
 ```text
-http://localhost:8080
+http://localhost:3000
 ```
 
-## Развертывание
+## Развертывание на Linux-сервере с Nginx
 
-Подойдёт любой статический хостинг: GitHub Pages, Netlify, Vercel, Timeweb Cloud, Selectel Object Storage или обычный хостинг с Nginx/Apache.
+Пример ниже предполагает, что проект находится в `/var/www/balance-profi`, backend слушает `127.0.0.1:3000`, а Nginx принимает внешние запросы.
 
-### Вариант через Nginx
+### 1. Подготовить проект
 
-1. Скопируйте файлы проекта на сервер, например в `/var/www/balance-profi`.
-2. Настройте root сайта на эту папку.
-3. Убедитесь, что главная страница отдаётся из `index.html`, а политика доступна по `/privacy.html`.
+```bash
+cd /var/www/balance-profi
+npm install --omit=dev
+cp .env.example .env
+nano .env
+```
 
-Пример минимального конфига:
+В `.env` укажите:
+
+```text
+TELEGRAM_BOT_TOKEN=...
+TELEGRAM_CHAT_ID=...
+PORT=3000
+```
+
+### 2. Запустить backend через systemd
+
+В репозитории есть пример unit-файла: `deploy/balance-profi.service`.
+
+```bash
+sudo cp deploy/balance-profi.service /etc/systemd/system/balance-profi.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now balance-profi
+sudo systemctl status balance-profi
+```
+
+Если путь проекта, пользователь или Node.js отличаются, поправьте `WorkingDirectory`, `EnvironmentFile`, `ExecStart`, `User` и `Group` в unit-файле.
+
+### 3. Настроить Nginx reverse proxy
+
+Минимальный конфиг:
 
 ```nginx
 server {
     listen 80;
     server_name example.ru www.example.ru;
+
     root /var/www/balance-profi;
     index index.html;
 
     gzip on;
-    gzip_types text/plain text/css application/javascript text/html;
+    gzip_types text/plain text/css application/javascript application/json text/html;
 
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
+
+    location /api/send {
+        proxy_pass http://127.0.0.1:3000/api/send;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 15s;
+    }
 
     location / {
         try_files $uri $uri/ /index.html;
@@ -181,15 +204,36 @@ server {
 }
 ```
 
-### Вариант через Netlify/Vercel
+Проверка и перезагрузка Nginx:
 
-1. Создайте новый проект из репозитория.
-2. Build command оставьте пустым.
-3. Publish directory укажите `.`.
-4. Для Netlify функции уже описаны в `netlify.toml`: `functions = "netlify/functions"`.
-5. Добавьте переменные окружения `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID`.
-6. Опубликуйте проект.
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
 
+Для production включите HTTPS через Certbot или другой ACME-клиент.
+
+## Оптимизация, скорость и ИБ
+
+Что уже сделано:
+
+- сайт отдаётся как статические файлы, а backend обрабатывает только `/api/send`;
+- внешний шрифт заменён на системный стек, чтобы убрать лишние сетевые запросы и передачу данных третьей стороне;
+- скрипт подключён с `defer`, не блокирует первичный рендеринг страницы;
+- добавлен базовый `Content-Security-Policy` без `upgrade-insecure-requests`, чтобы тестовый HTTP-стенд не ломался;
+- Telegram-токен не попадает в браузерный JavaScript и читается только сервером из `.env`;
+- backend работает без внешних npm-зависимостей, ограничивает размер JSON до `16kb`, валидирует и очищает данные;
+- форма использует HTML5-валидацию, `maxlength` для текстовых полей и обязательное согласие с политикой.
+
+Рекомендации для production:
+
+- включите HTTPS и редирект с HTTP на HTTPS;
+- храните `.env` вне git и ограничьте права на чтение;
+- добавьте rate limiting для `/api/send` на уровне Nginx или backend;
+- при спаме подключите CAPTCHA/Turnstile;
+- настройте журнал ошибок backend и мониторинг доставки в Telegram;
+- включите gzip или brotli-сжатие для `html`, `css`, `js`, `json`;
+- задайте кеширование для статических файлов и аккуратно обновляйте имена файлов при релизах.
 
 ## Что ещё можно улучшить
 
