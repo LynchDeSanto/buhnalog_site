@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Лаконичный лендинг бухгалтерской компании с услугами, калькулятором стоимости и контактной формой."
+    />
+    <title>Баланс Профи — бухгалтерские услуги для бизнеса</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self'; script-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'none'"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav container" aria-label="Главная навигация">
+        <a class="logo" href="#top" aria-label="Баланс Профи">
+          <span class="logo-mark">БП</span>
+          <span>Баланс Профи</span>
+        </a>
+        <div class="nav-links">
+          <a href="#about">О компании</a>
+          <a href="#services">Услуги</a>
+          <a href="#calculator">Калькулятор</a>
+          <a href="#contacts">Контакты</a>
+        </div>
+        <a class="button button-small" href="#contactForm">Консультация</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero section">
+        <div class="container hero-grid">
+          <div class="hero-content">
+            <p class="eyebrow">Бухгалтерия без хаоса и просрочек</p>
+            <h1>Ведём бухгалтерию, налоги и отчётность для малого бизнеса</h1>
+            <p class="hero-text">
+              Помогаем предпринимателям и компаниям держать финансы под контролем:
+              от первички и зарплаты до налоговой стратегии и сдачи отчётности.
+            </p>
+            <div class="hero-actions">
+              <a class="button" href="#calculator">Рассчитать стоимость</a>
+              <a class="button button-ghost" href="#services">Посмотреть услуги</a>
+            </div>
+            <div class="hero-stats" aria-label="Показатели компании">
+              <div><strong>9 лет</strong><span>в бухгалтерском сопровождении</span></div>
+              <div><strong>120+</strong><span>клиентов на обслуживании</span></div>
+              <div><strong>24 ч</strong><span>среднее время ответа</span></div>
+            </div>
+          </div>
+          <aside class="hero-card" aria-label="Преимущества сопровождения">
+            <div class="card-icon">₽</div>
+            <h2>Финансовый порядок каждый месяц</h2>
+            <ul>
+              <li>Персональный бухгалтер и налоговый консультант</li>
+              <li>Контроль сроков платежей и отчётности</li>
+              <li>Понятные ежемесячные отчёты для руководителя</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="about">
+        <div class="container split">
+          <div>
+            <p class="eyebrow">О компании</p>
+            <h2>Мы говорим с бизнесом на понятном языке</h2>
+          </div>
+          <div class="text-block">
+            <p>
+              «Баланс Профи» — команда бухгалтеров, налоговых специалистов и
+              кадровых экспертов. Мы берём на себя рутину, предупреждаем о рисках
+              заранее и объясняем цифры так, чтобы вы могли принимать решения быстро.
+            </p>
+            <p>
+              Работаем с ИП, ООО, онлайн‑проектами, услугами, торговлей и небольшим
+              производством. Подключаемся к текущим процессам или выстраиваем учёт с нуля.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-muted" id="services">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Услуги</p>
+            <h2>Закрываем ключевые задачи бухгалтерии</h2>
+          </div>
+          <div class="services-grid">
+            <article class="service-card">
+              <span>01</span>
+              <h3>Бухгалтерское сопровождение</h3>
+              <p>Ведение учёта, первичные документы, сверки, книги продаж и покупок.</p>
+            </article>
+            <article class="service-card">
+              <span>02</span>
+              <h3>Налоги и отчётность</h3>
+              <p>Расчёт налогов, декларации, уведомления, ответы на требования ФНС.</p>
+            </article>
+            <article class="service-card">
+              <span>03</span>
+              <h3>Зарплата и кадры</h3>
+              <p>Начисление зарплаты, отпуска, больничные, кадровые документы и отчёты.</p>
+            </article>
+            <article class="service-card">
+              <span>04</span>
+              <h3>Восстановление учёта</h3>
+              <p>Разбираем периоды с ошибками, восстанавливаем документы и сдаём корректировки.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="calculator">
+        <div class="container calculator-wrap">
+          <div>
+            <p class="eyebrow">Калькулятор услуг</p>
+            <h2>Оцените ежемесячную стоимость сопровождения</h2>
+            <p class="text-block">
+              Итоговая цена зависит от системы налогообложения, количества операций,
+              сотрудников и дополнительных задач. Калькулятор покажет ориентир для
+              первого обсуждения.
+            </p>
+          </div>
+          <form class="calculator" id="priceCalculator">
+            <label>
+              Система налогообложения
+              <select id="taxSystem">
+                <option value="6000">УСН / патент</option>
+                <option value="9000">ОСНО</option>
+                <option value="7500">НПД + ИП</option>
+              </select>
+            </label>
+            <label>
+              Операций в месяц: <strong id="operationsValue">50</strong>
+              <input id="operations" type="range" min="10" max="400" step="10" value="50" />
+            </label>
+            <label>
+              Сотрудников: <strong id="employeesValue">3</strong>
+              <input id="employees" type="range" min="0" max="50" step="1" value="3" />
+            </label>
+            <label class="checkbox-row">
+              <input id="hrDocs" type="checkbox" checked />
+              <span>Кадровое сопровождение</span>
+            </label>
+            <label class="checkbox-row">
+              <input id="consulting" type="checkbox" />
+              <span>Ежемесячная налоговая консультация</span>
+            </label>
+            <div class="calculator-result">
+              <span>Ориентировочно</span>
+              <strong id="totalPrice">0 ₽/мес.</strong>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="section section-muted">
+        <div class="container steps-grid">
+          <div class="section-heading align-left">
+            <p class="eyebrow">Как начинаем</p>
+            <h2>Три шага до спокойной бухгалтерии</h2>
+          </div>
+          <div class="steps">
+            <div><span>1</span><p>Проводим экспресс‑аудит текущего учёта и рисков.</p></div>
+            <div><span>2</span><p>Согласуем формат работы, сроки и ответственных.</p></div>
+            <div><span>3</span><p>Забираем рутину и регулярно присылаем понятные отчёты.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section contacts" id="contacts">
+        <div class="container contact-card">
+          <div>
+            <p class="eyebrow">Связаться с нами</p>
+            <h2>Расскажите о вашей задаче — предложим оптимальный формат</h2>
+            <p>Ответим в течение рабочего дня и подготовим предварительную оценку.</p>
+          </div>
+          <div class="contact-actions">
+            <a class="button" href="tel:+79990000000">+7 999 000‑00‑00</a>
+            <a class="button button-ghost light" href="mailto:hello@balance-profi.ru">hello@balance-profi.ru</a>
+            <p>Москва · Работаем с клиентами по всей России</p>
+          </div>
+          <form class="contact-form" id="contactForm" action="#contacts" method="post">
+            <label>
+              Ваше имя
+              <input name="name" type="text" autocomplete="name" maxlength="80" required placeholder="Иван Иванов" />
+            </label>
+            <label>
+              Телефон или email
+              <input name="contact" type="text" autocomplete="email" maxlength="120" required placeholder="+7 999 000-00-00" />
+            </label>
+            <label class="form-field-full">
+              Задача
+              <textarea name="message" rows="4" maxlength="800" required placeholder="Например: нужно вести ООО на УСН, 5 сотрудников"></textarea>
+            </label>
+            <label class="form-consent">
+              <input name="privacy" type="checkbox" required />
+              <span>Согласен(на) с <a href="./privacy.html">политикой конфиденциальности</a></span>
+            </label>
+            <button class="button" type="submit">Отправить заявку</button>
+            <p class="form-note" id="formStatus" role="status" aria-live="polite">
+              Нажмите «Отправить заявку» — данные уйдут через форму сайта в Telegram менеджеру.
+            </p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <a class="logo" href="#top"><span class="logo-mark">БП</span><span>Баланс Профи</span></a>
+          <p>Бухгалтерские услуги для малого бизнеса и предпринимателей.</p>
+        </div>
+        <nav aria-label="Ссылки в подвале">
+          <a href="#about">О компании</a>
+          <a href="#services">Услуги</a>
+          <a href="#contacts">Контакты</a>
+          <a href="./privacy.html">Политика конфиденциальности</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script src="./script.js" defer></script>
+  </body>
+</html>
