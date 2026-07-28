@@ -227,11 +227,9 @@
               <span>Согласен(на) с <a href="./privacy.html">политикой конфиденциальности</a></span>
             </label>
             <!-- Cloudflare Turnstile CAPTCHA -->
-            <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-callback="onTurnstileSuccess"></div>
+            <div class="cf-turnstile" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-callback="onTurnstileSuccess" data-theme="auto" data-size="normal" data-appearance="always"></div>
             <button class="button" type="submit">Отправить заявку</button>
-            <p class="form-note" id="formStatus" role="status" aria-live="polite">
-              Нажмите «Отправить заявку» — данные уйдут через форму сайта в Telegram менеджеру.
-            </p>
+            <p class="form-note" id="formStatus" role="status" aria-live="polite"></p>
           </form>
         </div>
       </section>

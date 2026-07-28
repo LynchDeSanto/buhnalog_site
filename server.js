@@ -7,6 +7,11 @@ const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/sit
 const PUBLIC_DIR = __dirname;
 const MAX_JSON_SIZE = 16 * 1024;
 
+// Rate limiting configuration
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 минут
+const MAX_REQUESTS_PER_WINDOW = 5; // Максимум 5 запросов с одного IP за 15 минут
+const rateLimitStore = new Map();
+
 function loadEnv(filePath = path.join(PUBLIC_DIR, '.env')) {
   if (!fs.existsSync(filePath)) return;
 
@@ -38,6 +43,43 @@ function securityHeaders(extraHeaders = {}) {
     ...extraHeaders,
   };
 }
+
+// Rate limiting check
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const record = rateLimitStore.get(ip);
+
+  if (!record) {
+    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
+    return { allowed: true, retryAfter: null };
+  }
+
+  // Сброс если окно истекло
+  if (now > record.resetAt) {
+    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
+    return { allowed: true, retryAfter: null };
+  }
+
+  // Проверка лимита
+  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
+    const retryAfter = Math.ceil((record.resetAt - now) / 1000);
+    return { allowed: false, retryAfter };
+  }
+
+  // Увеличение счётчика
+  record.count++;
+  return { allowed: true, retryAfter: null };
+}
+
+// Очистка старых записей rate limit каждые 30 минут
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, record] of rateLimitStore.entries()) {
+    if (now > record.resetAt) {
+      rateLimitStore.delete(ip);
+    }
+  }
+}, 30 * 60 * 1000);
 
 function sendJson(response, statusCode, payload) {
   response.writeHead(statusCode, securityHeaders({
@@ -186,6 +228,24 @@ async function handleApiSend(request, response) {
     return sendJson(response, 405, { message: 'Метод не поддерживается' });
   }
 
+  // Получение IP адреса
+  const remoteIp = request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+                   request.headers['x-real-ip'] ||
+                   request.socket.remoteAddress;
+
+  // Проверка rate limit
+  const rateLimitCheck = checkRateLimit(remoteIp);
+  if (!rateLimitCheck.allowed) {
+    response.writeHead(429, securityHeaders({
+      'Content-Type': 'application/json; charset=utf-8',
+      'Retry-After': rateLimitCheck.retryAfter.toString(),
+      'Cache-Control': 'no-store',
+    }));
+    return response.end(JSON.stringify({
+      message: `Слишком много запросов. Попробуйте через ${rateLimitCheck.retryAfter} сек.`
+    }));
+  }
+
   let payload;
   try {
     payload = await readJsonBody(request);
@@ -202,9 +262,6 @@ async function handleApiSend(request, response) {
   }
 
   // Проверка Turnstile CAPTCHA
-  const remoteIp = request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-                   request.headers['x-real-ip'] ||
-                   request.socket.remoteAddress;
   const turnstileResult = await verifyTurnstile(payload.turnstileToken, remoteIp);
   if (!turnstileResult.ok) {
     return sendJson(response, 422, { message: turnstileResult.message });
