@@ -1,0 +1,17 @@
+[Unit]
+Description=Balance Profi landing backend
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/balance-profi
+Environment=NODE_ENV=production
+EnvironmentFile=/var/www/balance-profi/.env
+ExecStart=/usr/bin/node /var/www/balance-profi/server.js
+Restart=always
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target

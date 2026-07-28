@@ -1,0 +1,32 @@
+# robots.txt для balance-profi.ru
+
+User-agent: *
+Allow: /
+Disallow: /deploy/
+Disallow: /.env
+
+# Основные поисковые боты
+User-agent: Yandex
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+# Запрет для AI-ботов, если не хотите индексацию для обучения
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+# Sitemap
+Sitemap: https://balance-profi.ru/sitemap.xml

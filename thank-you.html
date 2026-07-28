@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Спасибо за заявку — Баланс Профи</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="alternate icon" href="./favicon.ico" />
+    <link rel="stylesheet" href="./styles.css" />
+    <style>
+      .thank-you-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top right, rgba(216,168,78,.23), transparent 34%), var(--bg);
+      }
+      .thank-you-card {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 64px 48px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 36px;
+        box-shadow: var(--shadow);
+        text-align: center;
+      }
+      .thank-you-icon {
+        width: 96px;
+        height: 96px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--green), var(--gold));
+        color: #fff;
+        font-size: 48px;
+        font-weight: 800;
+      }
+      .thank-you-card h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        margin-bottom: 18px;
+      }
+      .thank-you-card p {
+        font-size: 1.15rem;
+        color: var(--muted);
+        margin-bottom: 18px;
+      }
+      .thank-you-info {
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 24px;
+        margin: 32px 0;
+        text-align: left;
+      }
+      .thank-you-info h2 {
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+      }
+      .thank-you-info ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .thank-you-info li {
+        padding: 8px 0;
+        color: var(--muted);
+      }
+      .thank-you-info li strong {
+        color: var(--ink);
+      }
+      .thank-you-actions {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 32px;
+      }
+      @media (max-width: 560px) {
+        .thank-you-card {
+          padding: 36px 24px;
+        }
+        .thank-you-actions {
+          flex-direction: column;
+        }
+        .thank-you-actions .button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="thank-you-page">
+      <div class="thank-you-card">
+        <div class="thank-you-icon">✓</div>
+        <h1>Заявка отправлена!</h1>
+        <p>Спасибо за обращение в Баланс Профи. Мы получили вашу заявку и свяжемся с вами в ближайшее время.</p>
+
+        <div class="thank-you-info">
+          <h2>Что дальше?</h2>
+          <ul>
+            <li><strong>1.</strong> Мы обработаем вашу заявку в течение рабочего дня</li>
+            <li><strong>2.</strong> Наш специалист свяжется с вами для уточнения деталей</li>
+            <li><strong>3.</strong> Подготовим коммерческое предложение с учётом вашей ситуации</li>
+          </ul>
+        </div>
+
+        <p><strong>Среднее время ответа — 24 часа</strong></p>
+        <p>Если у вас срочный вопрос, позвоните нам: <a href="tel:+79990000000" style="color: var(--green); font-weight: 700;">+7 999 000-00-00</a></p>
+
+        <div class="thank-you-actions">
+          <a class="button" href="/">Вернуться на главную</a>
+          <a class="button button-ghost" href="/#calculator">Рассчитать стоимость</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Яндекс.Метрика: цель "form_submit" сработает автоматически при загрузке страницы -->
+    <script>
+      // Отправка события конверсии в Яндекс.Метрику (если подключена)
+      if (typeof ym !== 'undefined') {
+        ym(YANDEX_METRIKA_ID, 'reachGoal', 'form_submit');
+      }
+    </script>
+  </body>
+</html>
